@@ -11,6 +11,7 @@ void labeling(image& img)
   MPI_Status status;
   string_count = img.m / size;
   rest = img.m % size;
+  std::cout << "hello im proc" << rank << std::endl;
 
   if (rank == 0) {
     new_string_count = string_count + rest;
@@ -42,7 +43,7 @@ void labeling(image& img)
         MPI_INT, i, 0, MPI_COMM_WORLD);
     }
   } else {
-    MPI_Recv(&local_img_arr, string_count * img.n, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD, &status);
+    MPI_Recv(&local_img_arr, string_count * img.n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
   }
 
   // clone part of img arr into cur rank's img
