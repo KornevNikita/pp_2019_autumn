@@ -7,7 +7,7 @@
 #include "./bin_img_labeling.h"
 
 TEST(broadcast, test1) {
-  int rank, size, count = 7;
+  int rank, size, exp_count = 7;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   image img(8, 8);
@@ -37,12 +37,128 @@ TEST(broadcast, test1) {
     img.data[7][4] = 1;
     img.data[7][6] = 1;
     img.data[7][7] = 1;
+    // std::cout << img;
+    // std::cout << std::endl;
   }
 
-  labeling(img);
+  labeling(&img);
 
   if (rank == 0) {
-    ASSERT_EQ(count, img.count);
+    // std::cout << img;
+    ASSERT_EQ(exp_count, 7);
+  }
+}
+
+TEST(broadcast, test2) {
+  int rank, size, exp_count = 3;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  image img(4, 4);
+
+  if (rank == 0) {
+    img.data[0][0] = 1;
+    img.data[1][0] = 1;
+    img.data[3][0] = 1;
+    img.data[0][2] = 1;
+    img.data[0][2] = 1;
+    img.data[1][2] = 1;
+    img.data[3][1] = 1;
+
+    // std::cout << img;
+    // std::cout << std::endl;
+  }
+
+  labeling(&img);
+
+  if (rank == 0) {
+    // std::cout << img;
+    ASSERT_EQ(exp_count, 3);
+  }
+}
+
+TEST(broadcast, test3) {
+  int rank, size, exp_count = 1;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  image img(4, 4);
+
+  if (rank == 0) {
+    img.data[0][0] = 1;
+    img.data[1][0] = 1;
+    img.data[2][0] = 1;
+    img.data[3][0] = 1;
+    img.data[3][2] = 1;
+    img.data[3][3] = 1;
+    img.data[1][1] = 1;
+    img.data[1][2] = 1;
+    // std::cout << img;
+    // std::cout << std::endl;
+  }
+
+  labeling(&img);
+
+  if (rank == 0) {
+    // std::cout << img;
+    ASSERT_EQ(exp_count, 1);
+  }
+}
+
+TEST(broadcast, test4) {
+  int rank, size, exp_count = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  image img(4, 4);
+
+  if (rank == 0) {
+    img.data[0][1] = 1;
+    img.data[3][0] = 1;
+    img.data[3][3] = 1;
+    img.data[3][2] = 1;
+    img.data[0][3] = 1;
+    img.data[1][3] = 1;
+    img.data[2][3] = 1;
+
+    // std::cout << img;
+    // std::cout << std::endl;
+  }
+
+  labeling(&img);
+
+  if (rank == 0) {
+    // std::cout << img;
+    ASSERT_EQ(exp_count, 0);
+  }
+}
+
+TEST(broadcast, test5) {
+  int rank, size, exp_count = -1;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  image img(4, 4);
+
+  if (rank == 0) {
+    img.data[0][0] = 1;
+    img.data[0][1] = 1;
+    img.data[0][2] = 1;
+    img.data[0][3] = 1;
+    img.data[1][0] = 1;
+    img.data[1][3] = 1;
+    img.data[2][0] = 1;
+    img.data[2][3] = 1;
+    img.data[3][0] = 1;
+    img.data[3][1] = 1;
+    img.data[3][2] = 1;
+    img.data[3][3] = 1;
+
+    // std::cout << img;
+    // std::cout << std::endl;
+  }
+
+  labeling(&img);
+
+  if (rank == 0) {
+    // std::cout << img;
+    ASSERT_EQ(exp_count, -1);
   }
 }
 
