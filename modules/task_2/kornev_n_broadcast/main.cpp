@@ -7,10 +7,9 @@
 #include "./broadcast.h"
 
 TEST(broadcast, int) {
-  int rank, size, root = 0, n;
+  int rank, size, root = 0, n = 10;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  n = size;
   int* a = new int[n];
   int sum = 0;
 
@@ -20,30 +19,19 @@ TEST(broadcast, int) {
     }
   }
 
-  // double start1, end1, start2, end2;
-  // start1 = MPI_Wtime();
-  broadcast(&a[0], n, MPI_INT, root, MPI_COMM_WORLD);
-  // end1 = MPI_Wtime();
-
-  // start2 = MPI_Wtime();
-  // MPI_Bcast(&a, n, MPI_INT, root, MPI_COMM_WORLD);
-  // end2 = MPI_Wtime();
-
+  broadcast(a, n, MPI_INT, root, MPI_COMM_WORLD);
   a[rank] = 1;
   MPI_Reduce(&a[rank], &sum, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
+
   if (rank == root) {
-    // std::cout << "my_bcast " << end1 - start1 << std::endl;
-    // std::cout << "mpi_bcast " << end2 - start2 << std::endl;
-    // std::cout << (end2 - start2) / (end1 - start1) << std::endl;
-    ASSERT_EQ(size, sum);
+    ASSERT_EQ(sum, size);
   }
 }
 
 TEST(broadcast, float) {
-  int rank, size, root = 0, n;
+  int rank, size, root = 0, n = 10;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  n = size;
   float* a = new float[n];
   float sum = .0;
 
@@ -53,7 +41,7 @@ TEST(broadcast, float) {
     }
   }
 
-  broadcast(&a[0], n, MPI_FLOAT, root, MPI_COMM_WORLD);
+  broadcast(a, n, MPI_INT, root, MPI_COMM_WORLD);
   a[rank] = 1.;
   MPI_Reduce(&a[rank], &sum, 1, MPI_FLOAT, MPI_SUM, root, MPI_COMM_WORLD);
 
@@ -63,10 +51,9 @@ TEST(broadcast, float) {
 }
 
 TEST(broadcast, double) {
-  int rank, size, root = 0, n;
+  int rank, size, root = 0, n = 10;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  n = size;
   double* a = new double[n];
   double sum = .0;
 
@@ -76,7 +63,7 @@ TEST(broadcast, double) {
     }
   }
 
-  broadcast(&a[0], n, MPI_DOUBLE, root, MPI_COMM_WORLD);
+  broadcast(a, n, MPI_INT, root, MPI_COMM_WORLD);
   a[rank] = 1.;
   MPI_Reduce(&a[rank], &sum, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
 
@@ -86,29 +73,27 @@ TEST(broadcast, double) {
 }
 
 TEST(broadcast, test4) {
-  int rank, size, root = 0, n;
+  int rank, size, root = 0, n = 10;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  n = size;
   int* a = new int[n];
-  int sum = 0, res = 0;
+  int sum = 0;
 
   if (rank == root) {
-    for (int i = 0; i < n; i++)
-      a[i] = 1;
-  }
-
-  broadcast(&a[0], n, MPI_INT, root, MPI_COMM_WORLD);
-
-  if (rank != 0) {
     for (int i = 0; i < n; i++) {
-      sum += a[i];
+      a[i] = 1;
     }
   }
 
-  MPI_Reduce(&sum, &res, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
+  broadcast(a, n, MPI_INT, root, MPI_COMM_WORLD);
+
   if (rank == 0) {
-    ASSERT_EQ(res, (size - 1) * n);
+    for (int i = 0; i < n; i++)
+      sum += a[i];
+  }
+
+  if (rank == 0) {
+    ASSERT_EQ(sum, 10);
   }
 }
 
@@ -125,7 +110,7 @@ TEST(broadcast, test5) {
     }
   }
 
-  broadcast(&a[0], n, MPI_INT, root, MPI_COMM_WORLD);
+  broadcast(a, n, MPI_INT, root, MPI_COMM_WORLD);
   a[rank] = 1;
   MPI_Reduce(&a[rank], &sum, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
 
