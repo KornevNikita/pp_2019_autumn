@@ -45,6 +45,7 @@ TEST(broadcast, test1) {
 
   if (rank == 0) {
     // std::cout << img;
+    // draw(&img);
     ASSERT_EQ(exp_count, 7);
   }
 }
@@ -72,6 +73,7 @@ TEST(broadcast, test2) {
 
   if (rank == 0) {
     // std::cout << img;
+    // draw(&img);
     ASSERT_EQ(exp_count, 3);
   }
 }
@@ -99,6 +101,7 @@ TEST(broadcast, test3) {
 
   if (rank == 0) {
     // std::cout << img;
+    // draw(&img);
     ASSERT_EQ(exp_count, 1);
   }
 }
@@ -126,6 +129,7 @@ TEST(broadcast, test4) {
 
   if (rank == 0) {
     // std::cout << img;
+    // draw(&img);
     ASSERT_EQ(exp_count, 0);
   }
 }
@@ -157,6 +161,7 @@ TEST(broadcast, test5) {
   labeling(&img);
 
   if (rank == 0) {
+    // draw(&img);
     // std::cout << img;
     ASSERT_EQ(exp_count, -1);
   }

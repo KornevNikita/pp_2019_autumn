@@ -31,5 +31,6 @@ struct image {
 };
 
 void labeling(image* img);
+void draw(image* img);
 
 #endif  // MODULES_TASK_3_KORNEV_N_BIN_IMG_LABELING_BIN_IMG_LABELING_H_

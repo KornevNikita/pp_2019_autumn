@@ -1,6 +1,15 @@
 // Copyright 2019 Kornev Nikita
 
 #include "../../../modules/task_3/kornev_n_bin_img_labeling/bin_img_labeling.h"
+#include <Windows.h>
+#include <cmath>
+#include <iostream>
+using namespace std;
+
+COLORREF color(int label) {
+  int hash = pow(label, 3) + pow(label, 2) + label + 1;
+  return RGB(3 * hash % 256, 5 * hash % 256, 7 * hash % 256);
+}
 
 void labeling(image* img) {
   int rank, size, label, res = 0, label_count = 0, string_count, new_string_count, rest;
@@ -164,4 +173,34 @@ void labeling(image* img) {
     }
   }
   img->count = res;
+}
+
+void draw(image* img) {
+  HWND hwnd = GetConsoleWindow(); // Берём ориентир на консольное окно (В нём будем рисовать)
+  HDC dc = GetDC(hwnd); // Цепляемся к консольному окну
+  HBRUSH brush, bg = CreateSolidBrush(RGB(255, 255, 255)), black = CreateSolidBrush(0); // Переменная brush - это кисть, она будет использоваться для закрашивания	
+
+  bool flag = 0;
+  for (int i = 0; i < img->m; i++) {
+    for (int j = 0; j < img->n; j++) {
+      if (img->data[i][j] != 0) {
+        if (flag == 0) {
+          flag = 1;
+          if (img->data[i][j] == 1) {
+            SelectObject(dc, black);
+          }
+          else {
+            brush = CreateSolidBrush(color(img->data[i][j]));
+            SelectObject(dc, brush);
+          }
+        }
+        Rectangle(dc, 50 + j * 50, 175 + i * 50, 100 + j * 50, 225 + i * 50); 
+      } else {
+        if (flag == 1)
+          flag = 0;
+        SelectObject(dc, bg);
+        Rectangle(dc, 50 + j * 50, 175 + i * 50, 100 + j * 50, 225 + i * 50); 
+      }
+    }
+  }
 }
